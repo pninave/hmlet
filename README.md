@@ -16,37 +16,35 @@ For all other operations on this App, user first needs to register with below ma
 	"password":<password : e.g. "test">,
 	"name":<e.g.  "test">
 }
-output :
-On successful registration, user will get "access_token" and "refreesh_token" to start further operations. Please store "access_toekn" in Authorization header as :
+response :
+On successful registration, user will get "access_token" and "refresh_token" to start further operations. Please store "access_toekn" in Authorization header as :
 key : Authorization , Value : Bearer {{access_token}}
 All operation will be followed with this access tokens.
 
 3. /login : (jwt-authentication)
 User can login with registerd username and password in request body. 
-e.g.
-output: 
+response: 
 On successful login, user will get "access_token" and "refreesh_token" to start further operations. Please store "access_toekn" in Authorization header as :
 key : Authorization , Value : Bearer {{access_token}}
 All operation will be followed with this access tokens.
 
 4. /refresh : (jwt-authentication)
-If session has exceeded 15 min (maximum access_token lifetime), session can be revoked with new access_token using  this API. It will need refresh_token to fetch new access_token
+If session has exceeded 15 min (maximum access_token lifetime), access_token will be revoked and will no longer be valid.
+Caller need to use refresh_token to fetch new access_token.
 key : Authorization , Value : Bearer {{refresh_token}}
 
 5. /logout/access : (jwt-authentication) 
-With this API, we can logout. i.e. we cannot do any further operation using access_token. If we want, we can regenerate access_token using /refresh API.
-output:
-On successful login, user will get "access_token" and "refreesh_token" to start further operations.
+With this API, we can logout. i.e. we cannot do any further operation using access_token, access_token will be revoked on success reponse from api. If we want, we can generate a new access_token using /refresh API.
 
 6. /logout/refresh : (jwt-authentication)
-To logout refresh_token. Once logged out with refresh token, we cannot revoke same session with /refresh API. Need to login again to get fresh tokens
+To logout with refresh_token. Once logged out with refresh token, both access_token and refresh_token will be revoked. Need to login again to get fresh access_token and refresh_token.
 
 7. /upload-photo :
-It will upload phot provided by logged-in user in body as file parameter in form data :
-request-body ->  form datad -> key : file, value : <filename>.png
+It will upload photo provided by logged-in user in body as file parameter in form data :
+request-body: form data -> key : file, value : <filename>.png
   
 8. /post-photo/<int:photo_id> :
-Uploaded photo will be posted.  It can be verified with [GET] /photo/<id> API, checking "posted" field set to 1. If its 0, it means photo is still in draft. photo_id can be Obtained from /my-photos API
+Uploaded photo will be posted.  It can be verified with [GET] /photo/<id> API, checking "posted" field in response set to 1. If its 0, it means photo is still in draft. photo_id can be Obtained from /my-photos API
   
 9. /photos/<int:photo_id>/caption :
 Edit photo Caption with parameter in body as :
@@ -55,11 +53,11 @@ Edit photo Caption with parameter in body as :
 }
 
 10. /delete-photo/<int:photo_id> :
-Photo will be deleted 
+Photo with given id will be deleted. id is obtained by `/all-photos` or `/my-photos` apis
 
 11. /all-photos :
 This API will provide all photos regardless of which user is logged in. (As in requirement to provide all photos)
-we can set order to get photos in ASC / DESC order by adding API query parameter as :
+To get photos in particular order, Caller need to send order(case insensitive and either `ASC` or `DESC`) in query parameter as :
 /all-photos?order=asc
 Also, can filter photos based on username as :
 /all-photos?user=test1@gmail.com
@@ -68,16 +66,17 @@ We can use both order and user query together as well :
 Note : All photos will be ordered ASC/DESC based on "published" date.
 
 12. /my-photos :
-Only user related photos will be accessed in ASC/DESC order using query parameter:
+Only photos owned by logged in user will be retunred in `ASC`/`DESC` order using query parameter:
 /my-photos?order=ASC
 
 13. /photo/<int:photo_id> :
-get photo based on photo_id parameter
+Get photo based for given photo_id in path parameter.
 
 14. /my-drafts :
-return all drafted photos which are not published.
-Drafted photos are one with posted = 0 flag.
-Can be eaccessed in ASC/DESC order by using query param.
+By default, upload photo saves photo as draft.
+Returns all drafted photos which are not published.
+Drafted photos are idnetified with flag value `posted` = 0 in response.
+Can be eaccessed in `ASC`/`DESC` order by using query param.
 
 
 
