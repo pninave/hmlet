@@ -37,7 +37,7 @@ key : Authorization , Value : Bearer {{refresh_token}}
 With this API, we can logout. i.e. we cannot do any further operation using access_token, access_token will be revoked on success reponse from api. If we want, we can generate a new access_token using /refresh API.
 
 6. /logout/refresh : (jwt-authentication)
-To logout with refresh_token. Once logged out with refresh token, both access_token and refresh_token will be revoked. Need to login again to get fresh access_token and refresh_token.
+To logout with refresh_token. Once logged out with refresh token, refresh_token will be revoked. Need to login again to get fresh access_token and refresh_token. Once refresh_token revoked, It cannot be use to for /refresh
 
 7. /upload-photo :
 It will upload photo provided by logged-in user in body as file parameter in form data :

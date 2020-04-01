@@ -174,18 +174,19 @@ def upload_photo():
                 resp = jsonify({'Error': "File already Uploaded."})
                 resp.status_code = 400
                 return resp
+
+            url = upload_dir+filename
+            result = dbCalls.add_user_photos(current_user, url)
             app.config['UPLOAD_FOLDER'] = upload_dir
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            url = upload_dir+filename
-            dbCalls.add_user_photos(current_user, url)
+
+            resp = jsonify({"id": result})
+            resp.status_code = 201
+            return resp
         except Exception as e:
             resp = jsonify({'Error': str(e)})
             resp.status_code = 400
             return resp
-
-        resp = jsonify({'message': 'File successfully uploaded'})
-        resp.status_code = 201
-        return resp
     else:
         resp = jsonify(
             {'Error': 'Allowed file types are txt, pdf, png, jpg, jpeg, gif'})

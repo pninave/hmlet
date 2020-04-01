@@ -146,7 +146,8 @@ def add_user_photos(email, url):
         val = (userid, url)
         cursor_db.execute(q, val)
         dbNew.commit()
-        return True
+        last_insert_id = cursor_db.lastrowid
+        return last_insert_id
     except Exception as e:
         return e
 
